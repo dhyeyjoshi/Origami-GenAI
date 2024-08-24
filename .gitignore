@@ -1,9 +1,8 @@
 __pycache__
 
-client/*
 flask-server/data
 *origami_images
 media
 venv
 
-
+node_modules
