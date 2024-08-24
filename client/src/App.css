@@ -1,0 +1,94 @@
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.gif-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.gif {
+  width: 150px; /* Adjust the size as needed */
+  height: 150px; /* Adjust the size as needed */
+}
+
+.title {
+  font-family: 'Bodoni MT', serif; /* Use the Bodoni MT font */
+  text-align: center;
+  font-size: 3rem; /* Adjust the size as needed */
+  margin-top: 20px;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-top: 10px;
+}
+
+.form-container {
+  /* display: flex; */
+  justify-content: space-between;
+}
+
+.form-left {
+  width: 50%;
+}
+
+.glowing-card {
+  background-color: #1e083a;
+  color: white;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.image-placeholder {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 1px dashed grey;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+@font-face {
+  font-family: 'Origram';
+  src: url('./assets/fonts/Origram.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
