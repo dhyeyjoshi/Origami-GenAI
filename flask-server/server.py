@@ -268,31 +268,33 @@
 #     app.run(debug=True, port=8080)
 
 #################################################3 Latest Release #################################################
-
 import os
 import io
 import logging
-logging.basicConfig(level=logging.DEBUG)
+import asyncio
 from datetime import datetime
-from flask import Flask, request, jsonify, send_file, send_from_directory
-from flask_cors import CORS
+from quart import Quart, request, jsonify, send_file, send_from_directory
+from quart_cors import cors
 from PIL import Image
 from transformers import CLIPTokenizer
 import torch
 import model_loader
 import pipeline
-import random  # Import random module for generating random seed
+import random
 
+logging.basicConfig(level=logging.DEBUG)
 
-app = Flask(__name__)
-CORS(app, origins="*")
+app = Quart(__name__)
+cors(app, allow_origin="*")
 
 DEVICE = "cpu"
 ALLOW_CUDA = True
 ALLOW_MPS = False
 
+print("torch init")
 if torch.cuda.is_available() and ALLOW_CUDA:
     DEVICE = "cuda"
+    print("cuda selected")
 elif (torch.has_mps or torch.backends.mps.is_available()) and ALLOW_MPS:
     DEVICE = "mps"
 print(f"Using device: {DEVICE}")
@@ -301,38 +303,44 @@ tokenizer = CLIPTokenizer("./data/vocab.json", merges_file="./data/merges.txt")
 model_file = "./data/v1-5-pruned-emaonly.ckpt"
 models = model_loader.preload_models_from_standard_weights(model_file, DEVICE)
 
-UPLOAD_FOLDER = os.path.join(app.root_path, '/media/volume/origami_designs_volume/data/uploads')
+UPLOAD_FOLDER = os.path.join(app.root_path, 'media/volume/origami_designs_volume/data/uploads')
 ORIGAMI_IMAGES_FOLDER = os.path.join(app.root_path, 'origami_images')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 print(f"Upload folder: {UPLOAD_FOLDER}")
 
 @app.route("/api/generate", methods=['POST'])
-def generate():
-    prompt = request.form.get('prompt')
-    negative_prompt = request.form.get('negativePrompt', "")
-    cfg_scale = float(request.form.get('cfgScale'))
-    strength = round(float(request.form.get('strength')), 1)
-    steps = int(request.form.get('steps'))
-    seed = int(request.form.get('seed'))
-    image = request.files.get('image')
+async def generate():
+    print("request received")
+    form = await request.form
+    prompt = form.get('prompt')
+    negative_prompt = form.get('negativePrompt', "")
+    cfg_scale = float(form.get('cfgScale'))
+    strength = round(float(form.get('strength')), 1)
+    steps = int(form.get('steps'))
+    seed = int(form.get('seed'))
+    image = (await request.files).get('image')
     
     input_image = None
     if image:
         try:
-            input_image = Image.open(io.BytesIO(image.read()))
+            image_data = image.read()  # Synchronous read, no 'await'
+            input_image = await asyncio.to_thread(Image.open, io.BytesIO(image_data))
+            
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
             image_filename = f"{timestamp}.png"
             image_path = os.path.join(UPLOAD_FOLDER, image_filename)
-            input_image.save(image_path)
+            
+            await asyncio.to_thread(input_image.save, image_path)  # Save image asynchronously
             print(f"Image saved at: {image_path}")
         except Exception as e:
             print(f"Error saving image: {e}")
     
-    # static_suffix = ",origami, 3D structure, modular, ensure intricate paper folds and patterns, ultra sharp, cinematic, 100mm lens, 8k resolution"
     static_suffix = ",Ensure intricate folds and patterns, using a single sheet of paper in a complementary color, ultra sharp, cinematic, 100mm lens, 8k resolution"
     prompt = f"{prompt}, {static_suffix}"
+    print("sending to generate of pipeline")
 
-    output_image = pipeline.generate(
+    # The generate function should be asynchronous if it involves I/O-bound tasks
+    output_image = await pipeline.generate(
         prompt=prompt,
         uncond_prompt=negative_prompt,
         input_image=input_image,
@@ -350,13 +358,13 @@ def generate():
 
     output_image = Image.fromarray(output_image)
     img_byte_arr = io.BytesIO()
-    output_image.save(img_byte_arr, format='PNG')
+    await asyncio.to_thread(output_image.save, img_byte_arr, format='PNG')
     img_byte_arr.seek(0)
 
-    return send_file(img_byte_arr, mimetype='image/png')
+    return await send_file(img_byte_arr, mimetype='image/png')
 
 @app.route("/api/images", methods=['GET'])
-def list_images():
+async def list_images():
     image_dir = ORIGAMI_IMAGES_FOLDER
     print(f"Image directory: {image_dir}")
     if not os.path.exists(image_dir):
@@ -377,9 +385,9 @@ def list_images():
     return jsonify(images)
 
 @app.route('/origami_images/<path:filename>')
-def serve_origami_image(filename):
-    return send_from_directory(ORIGAMI_IMAGES_FOLDER, filename)
+async def serve_origami_image(filename):
+    return await send_from_directory(ORIGAMI_IMAGES_FOLDER, filename)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8080)
+    app.run(debug=False, port=8080)
 

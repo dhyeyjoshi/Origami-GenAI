@@ -1,0 +1,13 @@
+[Unit]
+Description=Hypercorn instance to serve FoldArt
+After=network.target
+
+[Service]
+User=exouser
+Group=www-data
+WorkingDirectory=/home/exouser/FoldArt-origami/flask-server
+Environment="PATH=/home/exouser/FoldArt-origami/flask-server/venv/bin"
+ExecStart=/home/exouser/FoldArt-origami/flask-server/venv/bin/hypercorn --bind 127.0.0.1:8080  server:app
+
+[Install]
+WantedBy=multi-user.target
