@@ -325,7 +325,6 @@ async def generate():
         try:
             image_data = image.read()  # Synchronous read, no 'await'
             input_image = await asyncio.to_thread(Image.open, io.BytesIO(image_data))
-            
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
             image_filename = f"{timestamp}.png"
             image_path = os.path.join(UPLOAD_FOLDER, image_filename)

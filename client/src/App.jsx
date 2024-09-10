@@ -3332,9 +3332,9 @@ const summaryData = {
     example: `"Without any watermarks"`,
   },
   cfgScale: {
-    parameter: "Cfg-Scale",
-    impact: "Higher Cfg-Scale value means the image will strictly follow the prompt",
-    example: "cfg_scale=10 for strong to the prompt",
+    parameter: "Prompt Strictness Level",
+    impact: "Higher value means the image will strictly follow the prompt",
+    example: "Prompt Strictness level=10 for strong to the prompt",
   },
   strength: {
     parameter: "Strength",
