@@ -300,9 +300,10 @@ elif (torch.has_mps or torch.backends.mps.is_available()) and ALLOW_MPS:
 print(f"Using device: {DEVICE}")
 
 tokenizer = CLIPTokenizer("./data/vocab.json", merges_file="./data/merges.txt")
+print("Model tokenizer")
 model_file = "./data/v1-5-pruned-emaonly.ckpt"
 models = model_loader.preload_models_from_standard_weights(model_file, DEVICE)
-
+print("model uploaded")
 UPLOAD_FOLDER = os.path.join('/media/volume/origami_designs_volume/data/uploads')
 print(UPLOAD_FOLDER)
 ORIGAMI_IMAGES_FOLDER = os.path.join(app.root_path, 'origami_images')
@@ -389,4 +390,4 @@ async def serve_origami_image(filename):
     return await send_from_directory(ORIGAMI_IMAGES_FOLDER, filename)
 
 if __name__ == "__main__":
-    app.run(debug=False, port=8080)
+    app.run(debug=True, port=8080)
