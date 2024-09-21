@@ -1,0 +1,27 @@
+1. cuda license error (your cloud instance doesn't have valid grid license )
+
+Sep 21 02:56:43 origami-vm hypercorn[1621]:     generator = torch.Generator(device=device)
+Sep 21 02:56:43 origami-vm hypercorn[1621]: RuntimeError: CUDA error: device doesn't have valid Grid license
+
+
+2. On Restart
+
+- cuda is busy/unavailable.
+- on nvdia-smi to check if cuda is busy, but no process was using it.
+- that means cuda was not able to start.
+
+3. Device change to cpu.
+
+- server started succesfully
+
+4. cuda test file
+- not able to run
+- not able to install torch
+- found space issue (56/58)
+
+
+Space Issue resolution
+-  /home/.local/share/trash, temp files and cache file need to be deleted
+- Above was occupying space of around 21G
+
+

@@ -303,7 +303,8 @@ tokenizer = CLIPTokenizer("./data/vocab.json", merges_file="./data/merges.txt")
 model_file = "./data/v1-5-pruned-emaonly.ckpt"
 models = model_loader.preload_models_from_standard_weights(model_file, DEVICE)
 
-UPLOAD_FOLDER = os.path.join(app.root_path, 'media/volume/origami_designs_volume/data/uploads')
+UPLOAD_FOLDER = os.path.join('/media/volume/origami_designs_volume/data/uploads')
+print(UPLOAD_FOLDER)
 ORIGAMI_IMAGES_FOLDER = os.path.join(app.root_path, 'origami_images')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 print(f"Upload folder: {UPLOAD_FOLDER}")
@@ -389,4 +390,3 @@ async def serve_origami_image(filename):
 
 if __name__ == "__main__":
     app.run(debug=False, port=8080)
-

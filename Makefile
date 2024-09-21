@@ -5,7 +5,6 @@ start:
 	sudo systemctl restart FoldArt
 	sudo systemctl status FoldArt.service 
 	
-
 # Monitor Logs
 logs:
 	sudo journalctl -xeu FoldArt -f
@@ -14,3 +13,12 @@ logs:
 gpu:
 	nvitop
 # nvidia-smi  alternate command for reference
+
+
+
+# To start the nginx server
+
+# sudo systemctl reload nginx
+# npm run build
+# sudo cp -r dist/* /var/www/FoldArt
+# sudo systemctl restart nginx
